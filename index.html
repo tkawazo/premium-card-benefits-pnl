@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Premium Card P&amp;L</title>
+<style>
+  :root { --bg:#f7f8f7; --card:#fff; --ink:#1d2320; --muted:#5f6b66; --line:#dfe4e1; --accent:#1b4332; --warm:#c96a0a; --neg:#b3261e; --pos:#1e7a46; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#111513; --card:#1a201d; --ink:#e8ece9; --muted:#9aa7a1; --line:#2c3531; --accent:#7fc8a0; --warm:#f0a04b; --neg:#ff8a80; --pos:#6fd49a; } }
+  :root[data-theme="dark"] { --bg:#111513; --card:#1a201d; --ink:#e8ece9; --muted:#9aa7a1; --line:#2c3531; --accent:#7fc8a0; --warm:#f0a04b; --neg:#ff8a80; --pos:#6fd49a; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.45 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+  .wrap { max-width:1120px; margin:0 auto; padding:24px 16px 48px; }
+  h1 { font-size:22px; margin:0 0 4px; }
+  .sub { color:var(--muted); margin:0 0 20px; max-width:760px; }
+  .grid { display:grid; grid-template-columns: 380px 1fr; gap:16px; align-items:start; }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+  .panel { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:14px 16px; }
+  .panel h2 { font-size:12px; letter-spacing:1.2px; text-transform:uppercase; color:var(--warm); margin:10px 0 8px; }
+  .panel h2:first-child { margin-top:0; }
+  label { display:grid; grid-template-columns: 1fr 96px; gap:8px; align-items:center; margin-bottom:6px; font-size:13px; }
+  label small { display:block; color:var(--muted); font-size:11px; }
+  input[type=number] { width:100%; padding:5px 7px; border:1px solid var(--line); border-radius:5px; background:var(--bg); color:var(--ink); font:inherit; text-align:right; }
+  select { padding:5px 7px; border:1px solid var(--line); border-radius:5px; background:var(--bg); color:var(--ink); font:inherit; }
+  .kpis { display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-bottom:16px; }
+  @media (max-width: 600px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
+  .kpi { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:12px; }
+  .kpi .n { font-size:22px; font-weight:650; font-variant-numeric: tabular-nums; }
+  .kpi .l { color:var(--muted); font-size:12px; }
+  table { width:100%; border-collapse:collapse; font-variant-numeric: tabular-nums; }
+  th, td { padding:6px 8px; border-bottom:1px solid var(--line); text-align:right; }
+  th:first-child, td:first-child { text-align:left; }
+  th { font-size:12px; color:var(--muted); font-weight:600; }
+  tr.total td { font-weight:650; border-top:2px solid var(--ink); }
+  .neg { color:var(--neg); } .pos { color:var(--pos); }
+  .bar { height:8px; border-radius:4px; background:var(--accent); }
+  .note { color:var(--muted); font-size:12px; margin-top:10px; }
+  .row { display:flex; gap:10px; align-items:center; margin-bottom:12px; flex-wrap:wrap; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Premium corporate card: benefits P&amp;L model</h1>
+  <p class="sub">An interactive unit-economics model for a premium B2B card (Black / World Elite tier). Change the assumptions to see how
+  benefits usage, pricing and spend mix drive contribution margin per card. <b>All default values are illustrative assumptions, not data from any company.</b></p>
+
+  <div class="row">
+    <span>Market preset:</span>
+    <select id="preset">
+      <option value="MX">Mexico</option>
+      <option value="CO">Colombia</option>
+      <option value="BR">Brazil</option>
+    </select>
+  </div>
+
+  <div class="grid">
+    <div class="panel" id="inputs">
+      <h2>Portfolio</h2>
+      <label>Active Black cards<input type="number" id="cards" value="5000" step="100"></label>
+      <label>Monthly spend per card (USD)<input type="number" id="spend" value="4500" step="100"></label>
+      <label>Cross-border share of spend (%)<input type="number" id="xb" value="25" step="1"></label>
+
+      <h2>Revenue</h2>
+      <label>Interchange, domestic (%)<small>net to issuer</small><input type="number" id="icDom" value="1.60" step="0.05"></label>
+      <label>Interchange, cross-border (%)<input type="number" id="icXb" value="2.00" step="0.05"></label>
+      <label>FX markup on cross-border (%)<input type="number" id="fx" value="1.00" step="0.1"></label>
+      <label>Annual fee per card (USD)<input type="number" id="fee" value="120" step="10"></label>
+      <label>Network incentives (bps of spend)<input type="number" id="incent" value="12" step="1"></label>
+
+      <h2>Benefits cost</h2>
+      <label>Rewards / cashback (bps of spend)<input type="number" id="rewards" value="80" step="5"></label>
+      <label>Lounge: cardholders who use it (%)<input type="number" id="loungeUse" value="30" step="1"></label>
+      <label>Lounge: visits per user per year<input type="number" id="loungeVisits" value="4" step="1"></label>
+      <label>Lounge: cost per visit (USD)<input type="number" id="loungeCost" value="32" step="1"></label>
+      <label>Travel &amp; purchase insurance per card/yr<input type="number" id="ins" value="18" step="1"></label>
+      <label>Concierge &amp; lifestyle per card/yr<input type="number" id="conc" value="10" step="1"></label>
+      <label>Network-funded share of benefits (%)<small>e.g. World Elite features</small><input type="number" id="netFund" value="20" step="5"></label>
+
+      <h2>Operating cost</h2>
+      <label>Processing &amp; scheme fees (bps)<input type="number" id="proc" value="25" step="1"></label>
+      <label>Fraud &amp; credit losses (bps)<input type="number" id="loss" value="20" step="1"></label>
+      <label>Metal card issuance, amortized/yr<input type="number" id="issue" value="15" step="1"></label>
+    </div>
+
+    <div>
+      <div class="kpis">
+        <div class="kpi"><div class="n" id="kCm">–</div><div class="l">Contribution margin / year</div></div>
+        <div class="kpi"><div class="n" id="kCmCard">–</div><div class="l">Margin per card / year</div></div>
+        <div class="kpi"><div class="n" id="kBen">–</div><div class="l">Benefits cost as % of revenue</div></div>
+        <div class="kpi"><div class="n" id="kBe">–</div><div class="l">Max rewards rate before margin hits zero</div></div>
+      </div>
+
+      <div class="panel">
+        <h2>Annual P&amp;L per card (USD)</h2>
+        <table id="pnl"></table>
+        <p class="note">Lounge cost = usage rate × visits × cost per visit. Network-funded share reduces lounge, insurance and concierge cost. Rewards are not network-funded.</p>
+      </div>
+
+      <div class="panel" style="margin-top:16px">
+        <h2>Sensitivity: margin per card by spend segment and lounge usage</h2>
+        <table id="sens"></table>
+        <p class="note">Benefits are a usage bet: fixed-cost benefits (lounge, insurance, metal card) dilute margin fastest on low-spend cards with high lounge usage. The segments where margin is thinnest are where customer discovery with high-value accounts should decide the benefits stack.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const presets = {
+  MX: { spend:4500, xb:25, icDom:1.60, icXb:2.00, fx:1.00, fee:120, loungeCost:32, ins:18, conc:10, loss:20 },
+  CO: { spend:3200, xb:30, icDom:1.80, icXb:2.00, fx:1.20, fee:100, loungeCost:30, ins:16, conc:9,  loss:25 },
+  BR: { spend:5200, xb:20, icDom:1.10, icXb:2.00, fx:1.50, fee:150, loungeCost:34, ins:20, conc:12, loss:30 }
+};
+const $ = id => document.getElementById(id);
+const v = id => parseFloat($(id).value) || 0;
+const usd = x => (x < 0 ? '–' : '') + '$' + Math.abs(x).toLocaleString('en-US', {maximumFractionDigits:0});
+
+function model(o = {}) {
+  const g = id => (id in o ? o[id] : v(id));
+  const annualSpend = g('spend') * 12;
+  const xbSpend = annualSpend * g('xb') / 100, domSpend = annualSpend - xbSpend;
+  const rev = {
+    'Interchange (domestic)': domSpend * g('icDom') / 100,
+    'Interchange (cross-border)': xbSpend * g('icXb') / 100,
+    'FX markup': xbSpend * g('fx') / 100,
+    'Annual fee': g('fee'),
+    'Network incentives': annualSpend * g('incent') / 10000
+  };
+  const fund = 1 - g('netFund') / 100;
+  const ben = {
+    'Rewards / cashback': annualSpend * g('rewards') / 10000,
+    'Lounge access': g('loungeUse') / 100 * g('loungeVisits') * g('loungeCost') * fund,
+    'Insurance': g('ins') * fund,
+    'Concierge & lifestyle': g('conc') * fund
+  };
+  const opx = {
+    'Processing & scheme fees': annualSpend * g('proc') / 10000,
+    'Fraud & credit losses': annualSpend * g('loss') / 10000,
+    'Card issuance': g('issue')
+  };
+  const sum = o => Object.values(o).reduce((a, b) => a + b, 0);
+  const R = sum(rev), B = sum(ben), C = sum(opx);
+  return { rev, ben, opx, R, B, C, cm: R - B - C };
+}
+
+function maxRewardsBps() {
+  const m = model(), spend = v("spend") * 12;
+  return spend ? (m.cm + m.ben["Rewards / cashback"]) / spend * 10000 : NaN;
+}
+
+function render() {
+  const m = model(), cards = v('cards');
+  $('kCm').textContent = usd(m.cm * cards);
+  $('kCm').className = 'n ' + (m.cm >= 0 ? 'pos' : 'neg');
+  $('kCmCard').textContent = usd(m.cm);
+  $('kBen').textContent = m.R ? (m.B / m.R * 100).toFixed(0) + '%' : '–';
+  const mr = maxRewardsBps();
+  $("kBe").textContent = isNaN(mr) ? "n/a" : mr.toFixed(0) + " bps";
+
+  const line = (k, x, neg) => `<tr><td>${k}</td><td class="${neg ? 'neg' : ''}">${usd(neg ? -x : x)}</td><td>${m.R ? (x / m.R * 100).toFixed(1) + '%' : ''}</td></tr>`;
+  let h = '<tr><th>Line</th><th>USD / card</th><th>% of revenue</th></tr>';
+  h += Object.entries(m.rev).map(([k, x]) => line(k, x)).join('');
+  h += `<tr class="total"><td>Total revenue</td><td>${usd(m.R)}</td><td>100%</td></tr>`;
+  h += Object.entries(m.ben).map(([k, x]) => line(k, x, true)).join('');
+  h += Object.entries(m.opx).map(([k, x]) => line(k, x, true)).join('');
+  h += `<tr class="total"><td>Contribution margin</td><td class="${m.cm >= 0 ? 'pos' : 'neg'}">${usd(m.cm)}</td><td>${m.R ? (m.cm / m.R * 100).toFixed(1) + '%' : ''}</td></tr>`;
+  $('pnl').innerHTML = h;
+
+  const uses = [10, 30, 60], spends = [800, 1500, 3000, 4500, 8000];
+  $('sens').innerHTML = '<tr><th>Monthly spend / card</th>' + uses.map(u => `<th>${u}% lounge use</th>`).join('') + '</tr>' +
+    spends.map(s => `<tr><td>${usd(s)}</td>` + uses.map(u => {
+      const c = model({ spend: s, loungeUse: u }).cm;
+      return `<td class="${c >= 0 ? 'pos' : 'neg'}">${usd(c)}</td>`;
+    }).join('') + '</tr>').join('');
+}
+
+$('preset').addEventListener('change', e => { Object.entries(presets[e.target.value]).forEach(([k, x]) => $(k).value = x); render(); });
+document.querySelectorAll('#inputs input').forEach(i => i.addEventListener('input', render));
+render();
+</script>
+</body>
+</html>
