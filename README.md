@@ -2,6 +2,8 @@
 
 An interactive, single-file model of the unit economics of a premium B2B card (Black / World Elite tier). Open `index.html` in any browser, or view it on GitHub Pages.
 
+**▶ Live demo: https://tkawazo.github.io/premium-card-benefits-pnl/**
+
 **All default values are illustrative assumptions.** They are not data from any issuer, network or benefit provider.
 
 ## Why I built it
